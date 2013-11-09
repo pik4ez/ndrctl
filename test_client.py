@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from module.engine import Engine
-from module.accel import Accel
+from client.engine import Engine
+from client.accel import Accel
 import os
 
 _p = "/home/tt4/tmp/ndrctl_moduletest/"
