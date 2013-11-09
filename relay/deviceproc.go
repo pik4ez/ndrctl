@@ -1,9 +1,9 @@
 package relay
 
 import (
+    "github.com/pik4ez/ndrctl/hwfs"
     "github.com/goerlang/node"
     "github.com/goerlang/etf"
-    "github.com/pik4ez/ndrctl/hwfs"
 )
 
 

@@ -1,11 +1,12 @@
 package relay
 
 import (
+    "path/filepath"
     "errors"
+
+    "github.com/pik4ez/ndrctl/hwfs"
     "github.com/goerlang/node"
     "github.com/goerlang/etf"
-    "github.com/pik4ez/ndrctl/hwfs"
-    "path/filepath"
 )
 
 type Relay struct {
@@ -53,7 +54,7 @@ func (r *Relay) createDevice(fsName, deviceName string,
     if !ok {
         return etf.Atom(""), errors.New("no such fs")
     }
-    device, err := hwfs.CreateDevice(deviceName, isSensor, isAffector)
+    device, err := fs.CreateDevice(deviceName, isSensor, isAffector)
     if err != nil {
         return etf.Atom(""), err
     }
