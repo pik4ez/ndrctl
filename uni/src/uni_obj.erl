@@ -7,7 +7,7 @@
 -behaviour(gen_server).
 
 -export([
-    start_link/2,
+    start_link/3,
     behaviour_info/1
 ]).
 
@@ -31,9 +31,9 @@ behaviour_info(callbacks) ->
         {init, 1},
         {compute, 2}].
 
-start_link(Module, Args) ->
+start_link(Capsule, Module, Args) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [
-        Module, Args], []).
+        Capsule, Module, Args], []).
 
 %% @hidden
 init(MFA = [Capsule, Module, Args]) ->

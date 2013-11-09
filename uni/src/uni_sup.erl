@@ -25,7 +25,7 @@ init(_Args) ->
 			worker,
 			[store]},
 		{clock,
-			{uni_clock, start_link, []},
+			{uni_clock, start_link, [10]},
 			permanent,
 			brutal_kill,
 			worker,

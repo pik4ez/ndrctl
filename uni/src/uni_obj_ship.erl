@@ -14,6 +14,6 @@
 init([_Capsule | _Args]) ->
     {ok, nil}.
 
-compute(_Tick, State) ->
+compute(Tick, State) ->
     NewState = State,
     NewState.

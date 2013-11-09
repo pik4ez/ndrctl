@@ -30,7 +30,7 @@ start_link(Freq) ->
 %% @hidden
 init([Freq]) ->
     pg2:create(tickers),
-    erlang:send_interval(Freq, tick),
+    timer:send_interval(Freq, tick),
     {ok, #state{freq = Freq, tick = 0}}.
 
 %% @hidden
@@ -43,7 +43,7 @@ handle_cast(_Message, State) ->
 
 %% @hidden
 handle_info(tick, State) ->
-    tick_all(pg2:get_members(), State#state.tick),
+    tick_all(pg2:get_members(tickers), State#state.tick),
     {noreply, State#state{tick = State#state.tick + 1}};
 
 handle_info(_Info, State) ->

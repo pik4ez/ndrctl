@@ -18,7 +18,7 @@ start_link(Module, Args) ->
 
 init(_Args) ->
     {ok, {{simple_one_for_one, 5, 60}, [
-        {nil,
+        {undefined,
             {uni_obj, start_link, []},
             permanent,
             brutal_kill,

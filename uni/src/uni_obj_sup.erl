@@ -17,9 +17,11 @@ start_link() ->
 init(_Args) ->
     {ok, {{one_for_one, 5, 60}, [
         {test_ship_1,
-            {uni_obj_ship, start_link, []},
+            {uni_obj_capsule, start_link, [
+                uni_obj_ship,
+                some_args]},
             permanent,
             brutal_kill,
             worker,
-            [uni_obj_ship]}
+            [uni_obj_capsule]}
     ]}}.
