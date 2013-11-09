@@ -37,17 +37,17 @@ handle_info({tick, _Tick}, State) ->
 	{noreply, State}.
 
 send_all('$end_of_table') ->
-	ok;
+	send_all_ws(pg2:get_members(ws_handlers), send);
 send_all({[], Continuation}) ->
 	send_all(ets:match_object(Continuation));
 send_all({[R|T], Continuation}) ->
-	send_all_ws(pg2:get_members(ws_handlers), {data, R}),
+	send_all_ws(pg2:get_members(ws_handlers), {slice, R}),
 	send_all({T, Continuation}).
 
 send_all_ws([], _) ->
 	ok;
 send_all_ws([Member | Tail], Data) ->
-	Member ! {data, Data},
+	Member ! Data,
 	send_all_ws(Tail, Data).
 
 %% @hidden

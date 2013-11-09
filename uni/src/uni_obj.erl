@@ -36,13 +36,14 @@ start_link(Id, Capsule, Module, Args) ->
     gen_server:start_link(?MODULE, [Id, Capsule, Module, Args], []).
 
 %% @hidden
-init(MFA = [Id, Capsule, Module, Args]) ->
+init([Id, Capsule, Module, Args]) ->
     uni_clock:join(self()),
+	{ok, Mst} = Module:init(Id, Capsule, Args),
     {ok, #state{
         id  = Id,
         cpl = Capsule,
         mod = Module,
-        mst = Module:init(Id, Capsule, Args)
+		mst = Mst
     }}.
 
 %% @hidden
