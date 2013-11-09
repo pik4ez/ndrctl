@@ -3,17 +3,17 @@ package relay
 import (
     "github.com/goerlang/node"
     "github.com/goerlang/etf"
-    "github.com/pik4ez/ndrctl/hwfs/fs"
+    "github.com/pik4ez/ndrctl/hwfs"
 )
 
 
 // device proc
 type deviceProc struct {
     node.GenServerImpl
-    device *fs.Device
+    device *hwfs.Device
 }
 
-func newDeviceProc(device *fs.Device) *deviceProc {
+func newDeviceProc(device *hwfs.Device) *deviceProc {
     return &deviceProc{device: device}
 }
 
