@@ -4,18 +4,18 @@ import (
     "errors"
     "github.com/goerlang/node"
     "github.com/goerlang/etf"
-    "github.com/pik4ez/ndrctl/hwfs/fs"
+    "github.com/pik4ez/ndrctl/hwfs"
     "path/filepath"
 )
 
 type Relay struct {
     basedir string
     node *node.Node
-    fss map[string]*fs.FS
+    fss map[string]*hwfs.FS
 }
 
 func NewRelay(basedir, name, cookie string) *Relay {
-    return &Relay{basedir, node.NewNode(name, cookie), make(map[string]*fs.FS)}
+    return &Relay{basedir, node.NewNode(name, cookie), make(map[string]*hwfs.FS)}
 }
 
 func (r *Relay) Publish(port int) error {
@@ -38,7 +38,7 @@ func (r *Relay) createFS(name string) error {
         return errors.New("fs already exists")
     }
     fsDir := filepath.Join(r.basedir, name)
-    myfs := fs.NewFS()
+    myfs := hwfs.NewFS()
     err := myfs.MountAndServe(fsDir)
     if err != nil {
         return err
@@ -53,7 +53,7 @@ func (r *Relay) createDevice(fsName, deviceName string,
     if !ok {
         return etf.Atom(""), errors.New("no such fs")
     }
-    device, err := fs.CreateDevice(deviceName, isSensor, isAffector)
+    device, err := hwfs.CreateDevice(deviceName, isSensor, isAffector)
     if err != nil {
         return etf.Atom(""), err
     }
