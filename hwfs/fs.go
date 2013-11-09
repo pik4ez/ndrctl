@@ -1,4 +1,4 @@
-package fs
+package hwfs
 
 import (
     "bazil.org/fuse"
