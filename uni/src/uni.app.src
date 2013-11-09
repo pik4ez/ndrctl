@@ -1,0 +1,8 @@
+%% vim: et ts=4 sw=4 ft=erlang
+
+{application, uni, [
+    {description, "ndrctl universe"},
+    {vsn, git},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {mod, {uni_app, []}}]}.
