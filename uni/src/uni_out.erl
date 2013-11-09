@@ -39,7 +39,7 @@ send_all('$end_of_table') ->
 send_all({[], Continuation}) ->
 	send_all(ets:match(Continuation));
 send_all({[R|T], Continuation}) ->
-	pg:send(ws_handlers, {data, R}),
+	pg2:send(ws_handlers, {data, R}),
 	send_all({T, Continuation}).
 
 %% @hidden

@@ -11,10 +11,10 @@
 ]).
 
 init({tcp, http}, _Req, _Opts) ->
-	pg:join(ws_handlers, self()),
+	pg2:join(ws_handlers, self()),
 	{upgrade, protocol, cowboy_websocket}.
 
-websocket_init({tcp}, Req, _Opts) ->
+websocket_init(tcp, Req, _Opts) ->
 	{ok, Req, undefined_state}.
 
 websocket_handle(_InFrame, Req, State) ->

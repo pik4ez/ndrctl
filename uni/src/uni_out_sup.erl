@@ -11,6 +11,7 @@ start_link() ->
 	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init(_Args) ->
+	pg2:create(ws_handlers),
 	Routes = cowboy_router:compile([
 		{'_',  [
 			{"/v1/universe", uni_ws_handler, []}
