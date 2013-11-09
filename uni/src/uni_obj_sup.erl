@@ -18,6 +18,7 @@ init(_Args) ->
     {ok, {{one_for_one, 5, 60}, [
         {test_ship_1,
             {uni_obj_capsule, start_link, [
+                1,
                 uni_obj_ship,
                 some_args]},
             permanent,

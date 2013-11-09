@@ -7,14 +7,14 @@
 -behaviour(uni_obj).
 
 -export([
-    init/1,
-    compute/2
+    init/3,
+    compute/3
 ]).
 
-init([_Capsule | _Args]) ->
+init(_Id, _Capsule, _Args) ->
     {ok, nil}.
 
-compute(Tick, State) ->
-    uni_store:save(Tick, 1, "My Custom Data"),
+compute(Id, Tick, State) ->
+    uni_store:save(Tick, Id, "My Custom Data"),
     NewState = State,
     NewState.

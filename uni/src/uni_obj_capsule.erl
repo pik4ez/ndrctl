@@ -7,17 +7,17 @@
 -behaviour(supervisor).
 
 -export([
-    start_link/2,
+    start_link/3,
     init/1
 ]).
 
-start_link(Module, Args) ->
+start_link(Id, Module, Args) ->
     {ok, Pid} = supervisor:start_link(?MODULE, []),
-    add_module(Pid, Module, Args),
+    add_module(Id, Pid, Module, Args),
     {ok, Pid}.
 
-add_module(Pid, Module, Args) ->
-    supervisor:start_child(Pid, [Pid, Module, Args]).
+add_module(Id, Pid, Module, Args) ->
+    supervisor:start_child(Pid, [Id, Pid, Module, Args]).
 
 init(_Args) ->
     {ok, {{simple_one_for_one, 5, 60}, [

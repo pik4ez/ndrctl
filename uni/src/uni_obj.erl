@@ -7,7 +7,7 @@
 -behaviour(gen_server).
 
 -export([
-    start_link/3,
+    start_link/4,
     behaviour_info/1
 ]).
 
@@ -21,6 +21,7 @@
 ]).
 
 -record(state, {
+    id,
     cpl,
     mod,
     mst %% module state
@@ -28,19 +29,20 @@
 
 behaviour_info(callbacks) ->
     [
-        {init, 1},
-        {compute, 2}].
+        {init, 3},
+        {compute, 3}].
 
-start_link(Capsule, Module, Args) ->
-    gen_server:start_link(?MODULE, [Capsule, Module, Args], []).
+start_link(Id, Capsule, Module, Args) ->
+    gen_server:start_link(?MODULE, [Id, Capsule, Module, Args], []).
 
 %% @hidden
-init(MFA = [Capsule, Module, Args]) ->
+init(MFA = [Id, Capsule, Module, Args]) ->
     uni_clock:join(self()),
     {ok, #state{
+        id  = Id,
         cpl = Capsule,
         mod = Module,
-        mst = Module:init([Capsule] ++ Args)
+        mst = Module:init(Id, Capsule, Args)
     }}.
 
 %% @hidden
@@ -54,7 +56,7 @@ handle_cast(_Message, State) ->
 %% @hidden
 handle_info({tick, Tick}, State) ->
     Module = State#state.mod,
-    NewModState = Module:compute(Tick, State#state.mst),
+    NewModState = Module:compute(State#state.id, Tick, State#state.mst),
     {noreply, State#state{mst = NewModState}};
 handle_info(_Info, State) ->
     {noreply, State}.
