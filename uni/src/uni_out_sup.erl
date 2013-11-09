@@ -24,6 +24,6 @@ init(_Args) ->
 			supervisor,
 			[out]},
 		ranch:child_spec(out_ws_pool, 2,
-			ranch_tcp, [{port, 8080}],
+			ranch_tcp, [{port, 8081}],
 			cowboy_protocol, [{env, [{dispatch, Routes}]}])
 	]}}.

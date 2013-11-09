@@ -20,6 +20,7 @@ start_link() ->
 
 %% @hidden
 init(_Args) ->
+	uni_clock:join(self()),
     {ok, nil}.
 
 %% @hidden
@@ -31,16 +32,23 @@ handle_cast(_Message, State) ->
     {noreply, State}.
 
 %% @hidden
-handle_info({tick, Tick}, _State) ->
-	send_all(ets:match(uni_store, {'$1', Tick, '$2'}, 20)).
+handle_info({tick, _Tick}, State) ->
+	send_all(ets:match_object(uni_state, {'$1', '_', '$2'}, 20)),
+	{noreply, State}.
 
 send_all('$end_of_table') ->
 	ok;
 send_all({[], Continuation}) ->
-	send_all(ets:match(Continuation));
+	send_all(ets:match_object(Continuation));
 send_all({[R|T], Continuation}) ->
-	pg2:send(ws_handlers, {data, R}),
+	send_all_ws(pg2:get_members(ws_handlers), {data, R}),
 	send_all({T, Continuation}).
+
+send_all_ws([], _) ->
+	ok;
+send_all_ws([Member | Tail], Data) ->
+	Member ! {data, Data},
+	send_all_ws(Tail, Data).
 
 %% @hidden
 terminate(_Reason, _State) ->
