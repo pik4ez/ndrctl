@@ -7,6 +7,11 @@
 ]).
 
 -export([
+    load/1,
+    save/3
+]).
+
+-export([
     init/1,
     handle_call/3,
     handle_cast/2,
@@ -15,7 +20,19 @@
     code_change/3
 ]).
 
+load(ObjId) ->
+    case ets:match_object(uni_state, {ObjId, '$1', '$2'}) of
+        [Result] ->
+            Result;
+        [] ->
+            nil
+    end.
+
+save(Tick, ObjId, ObjState) ->
+    gen_server:call(?MODULE, {save, Tick, ObjId, ObjState}).
+
 start_link() ->
+    ets:new(uni_state, [named_table, protected]),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 %% @hidden
@@ -27,6 +44,9 @@ handle_call(_Message, _From, State) ->
     {noreply, State}.
 
 %% @hidden
+handle_cast({save, Tick, ObjId, ObjState}, State) ->
+    ets:insert(uni_state, {ObjId, Tick, ObjState}),
+    {noreply, State};
 handle_cast(_Message, State) ->
     {noreply, State}.
 
