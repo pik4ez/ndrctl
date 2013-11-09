@@ -1,6 +1,4 @@
--module(uni_output).
-
--behaviour(gen_server).
+-module(uni_out).
 
 -behaviour(gen_server).
 
@@ -33,8 +31,16 @@ handle_cast(_Message, State) ->
     {noreply, State}.
 
 %% @hidden
-handle_info(_Info, State) ->
-    {noreply, State}.
+handle_info({tick, Tick}, _State) ->
+	send_all(ets:match(uni_store, {'$1', Tick, '$2'}, 20)).
+
+send_all('$end_of_table') ->
+	ok;
+send_all({[], Continuation}) ->
+	send_all(ets:match(Continuation));
+send_all({[R|T], Continuation}) ->
+	pg:send(ws_handlers, {data, R}),
+	send_all({T, Continuation}).
 
 %% @hidden
 terminate(_Reason, _State) ->

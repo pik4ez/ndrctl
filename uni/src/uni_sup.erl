@@ -12,12 +12,12 @@ start_link() ->
 
 init(_Args) ->
 	{ok, {{one_for_one, 5, 60}, [
-		{output,
-			{uni_output, start_link, []},
+		{out_sup,
+			{uni_out_sup, start_link, []},
 			permanent,
 			brutal_kill,
 			worker,
-			[output]},
+			[out_sup]},
 		{store,
 			{uni_store, start_link, []},
 			permanent,
