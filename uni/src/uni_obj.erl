@@ -32,8 +32,7 @@ behaviour_info(callbacks) ->
         {compute, 2}].
 
 start_link(Capsule, Module, Args) ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [
-        Capsule, Module, Args], []).
+    gen_server:start_link(?MODULE, [Capsule, Module, Args], []).
 
 %% @hidden
 init(MFA = [Capsule, Module, Args]) ->

@@ -15,5 +15,6 @@ init([_Capsule | _Args]) ->
     {ok, nil}.
 
 compute(Tick, State) ->
+    uni_store:save(Tick, 1, "My Custom Data"),
     NewState = State,
     NewState.

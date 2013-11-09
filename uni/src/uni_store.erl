@@ -29,14 +29,14 @@ load(ObjId) ->
     end.
 
 save(Tick, ObjId, ObjState) ->
-    gen_server:call(?MODULE, {save, Tick, ObjId, ObjState}).
+    gen_server:cast(?MODULE, {save, Tick, ObjId, ObjState}).
 
 start_link() ->
-    ets:new(uni_state, [named_table, protected]),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 %% @hidden
 init(_Args) ->
+    ets:new(uni_state, [named_table, protected]),
     {ok, nil}.
 
 %% @hidden
