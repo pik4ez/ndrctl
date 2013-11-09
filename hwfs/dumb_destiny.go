@@ -36,6 +36,9 @@ func dumbTickSensor(dev *fs.Device) {
         id++
         str := strconv.Itoa(id)
         dev.Sense([]byte(str))
+        if id == 5 {
+            break
+        }
     }
 }
 

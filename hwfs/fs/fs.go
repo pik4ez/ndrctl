@@ -4,6 +4,7 @@ import (
     "bazil.org/fuse"
     "bazil.org/fuse/fs"
     "errors"
+    "os"
 )
 
 
@@ -19,7 +20,9 @@ func (f *FS) Root() (fs.Node, fuse.Error) {
     return f.root.Root()
 }
 
+// FIXME: device removing
 func (f *FS) CreateDevice(name string, isSensor, isAffector bool) (*Device, error) {
+    // FIXME: inode number management
     _, err := f.LookupDevice(name)
     if err == nil {
         // already exist
@@ -42,4 +45,23 @@ func (f *FS) LookupDevice(name string) (*Device, error) {
         return nil, errors.New("not a device")
     }
     return fuseDevice.device, nil
+}
+
+func (f *FS) MountAndServe(dir string) error {
+    if _, err := os.Stat(dir); os.IsNotExist(err) {
+        err = os.MkdirAll(dir, os.ModeDir | 0777)
+        if err != nil {
+            return err
+        }
+    } else if err != nil {
+        return err
+    }
+    conn, err := fuse.Mount(dir)
+    if err != nil {
+        println("mount failed", err.Error())
+        return err
+    }
+    // FIXME: error handling there
+    go fs.Serve(conn, f)
+    return nil
 }

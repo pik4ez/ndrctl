@@ -24,6 +24,7 @@ func (f *FuseDevice) Attr() fuse.Attr {
 func (f *FuseDevice) Read(fReq *fuse.ReadRequest, fResp *fuse.ReadResponse,
     i fs.Intr) fuse.Error {
     println("read request, bufsize: ", cap(fResp.Data), fReq.Size)
+    // FIXME: handle aborted reads
     req := newReadReq()
     f.device.readReqs<- req
     resp := <-*req
@@ -40,6 +41,7 @@ func (f *FuseDevice) Read(fReq *fuse.ReadRequest, fResp *fuse.ReadResponse,
 func (f *FuseDevice) Write(fReq *fuse.WriteRequest, fResp *fuse.WriteResponse,
     i fs.Intr) fuse.Error {
     println("write request, datasize: ", len(fReq.Data))
+    // FIXME: handle aborted writes
     req := newWriteReq(fReq.Data)
     f.device.writeReqs <- req
     err := <-(*req).response
