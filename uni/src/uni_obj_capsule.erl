@@ -13,10 +13,10 @@
 
 start_link(Id, Module, Args) ->
     {ok, Pid} = supervisor:start_link(?MODULE, []),
-    add_module(Id, Pid, Module, Args),
+    add_child(Id, Pid, Module, Args),
     {ok, Pid}.
 
-add_module(Id, Pid, Module, Args) ->
+add_child(Id, Pid, Module, Args) ->
     supervisor:start_child(Pid, [Id, Pid, Module, Args]).
 
 init(_Args) ->
