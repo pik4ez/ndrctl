@@ -13,17 +13,19 @@ type Relay struct {
     basedir string
     node *node.Node
     fss map[string]*hwfs.FS
+    shutdownChan chan struct{}
 }
 
 func NewRelay(basedir, name, cookie string) *Relay {
-    return &Relay{basedir, node.NewNode(name, cookie), make(map[string]*hwfs.FS)}
+    return &Relay{basedir, node.NewNode(name, cookie), make(map[string]*hwfs.FS),
+        make(chan struct{}, 1)}
 }
 
 func (r *Relay) Publish(port int) error {
     return r.node.Publish(port)
 }
 
-func (r *Relay) Start() {
+func (r *Relay) Start() chan struct{} {
     err := r.node.RpcProvide("relay", "register_fs", r.rpcCreateFS)
     if err != nil {
         panic(err)
@@ -32,6 +34,11 @@ func (r *Relay) Start() {
     if err != nil {
         panic(err)
     }
+    err = r.node.RpcProvide("relay", "shutdown", r.rpcShutdown)
+    if err != nil {
+        panic(err)
+    }
+    return r.shutdownChan
 }
 
 func (r *Relay) createFS(name string) error {
@@ -62,6 +69,14 @@ func (r *Relay) createDevice(fsName, deviceName string,
     fullName := deviceName + "@" + fsName
     r.node.Spawn(dp, fullName)
     return etf.Atom(fullName), nil
+}
+
+func (r *Relay) shutdown() {
+    // unmount all fs
+    for name := range r.fss {
+        fullPath := filepath.Join(r.basedir, name)
+        unmount(fullPath)
+    }
 }
 
 // rpc funcs for erlang nodes
@@ -116,6 +131,17 @@ func (r *Relay) rpcCreateDevice(terms etf.List) etf.Term {
     return etf.Term(etf.Tuple{etf.Atom("ok"), fullName})
 }
 
+// shutdown request
+// takes no arguments
+func (r *Relay) rpcShutdown(terms etf.List) etf.Term {
+    if len(terms) != 0 {
+        return etf.Term(etf.Tuple{etf.Atom("error"), etf.Atom("badarith")})
+    }
+    r.shutdown()
+    r.shutdownChan <- struct{}{}
+    return etf.Term(etf.Atom("ok"))
+}
+// util funcs
 func parseCreateFlags(terms etf.List) (isSensor, isAffector bool, err error) {
     for _, t := range terms {
         if value, ok := t.(etf.Atom); ok {
