@@ -12,6 +12,12 @@ start_link() ->
 
 init(_Args) ->
 	{ok, {{one_for_one, 5, 60}, [
+		 {clock,
+			 {uni_clock, start_link, [10]},
+			 permanent,
+			 brutal_kill,
+			 worker,
+			 [clock]},
 		{store,
 			{uni_store, start_link, []},
 			permanent,
@@ -24,12 +30,6 @@ init(_Args) ->
 			brutal_kill,
 			worker,
 			[out_sup]},
-		{clock,
-			{uni_clock, start_link, [10]},
-			permanent,
-			brutal_kill,
-			worker,
-			[clock]},
 		{obj_sup,
 			{uni_obj_sup, start_link, []},
 			permanent,
