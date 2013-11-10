@@ -109,8 +109,5 @@ send_buffered_msgs([{ticked_send, Tick, Type, Msg} | T], CurrTick)
     end,
     send_buffered_msgs(T, CurrTick);
 send_buffered_msgs([C | T], CurrTick) ->
-    erlang:display(C),
-    erlang:display(T),
-    erlang:display(CurrTick),
     send_buffered_msgs(T, CurrTick).
     

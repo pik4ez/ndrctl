@@ -10,10 +10,28 @@
     boot/3
 ]).
 
+-record(nozzle, {
+	cur = 0,
+	set = 0
+}).
+
 -record(state, {
     ship_pid,
     ship_id,
-    circuit
+    circuit,
+	left = #nozzle{
+		cur = 0,
+		set = 0
+	},
+	center = #nozzle{
+		cur = 0,
+		set = 0
+	},
+	right = #nozzle{
+		cur = 0,
+		set = 0
+	},
+	power = 0.001
 }).
 
 init(_Id, _Capsule, [ShipPid, ShipId | _Args]) ->
@@ -29,11 +47,21 @@ boot(Id, _Capsule, State) ->
 
 compute(_Id, Tick, State) ->
     {ok, BinData} = uni_circuit:poll_module(State#state.circuit),
-    case BinData of
+    State2 = case BinData of
         nil ->
-            ok;
+			State;
         Something ->
-            {ok, [DX, DY], []} = io_lib:fread("~f ~f", binary_to_list(Something)),
-            uni_obj:send_neigh(Tick, State#state.ship_pid, {veloc, {DX, DY}})
+			{ok, [L, C, R], []} = io_lib:fread("~f ~f ~f", binary_to_list(Something)),
+			State#state{left = #nozzle{cur = L}, center = #nozzle{cur = C}, right = #nozzle{cur = R}}
     end,
-    State.
+	Vx = State2#state.right#nozzle.cur - State2#state.left#nozzle.cur,
+	Vy = State2#state.center#nozzle.cur,
+	Vl = math:sqrt(Vx*Vx + Vy*Vy),
+	{Dx, Dy} = case abs(Vl) of
+		M when M < 0.000000001 ->
+			{0, 0};
+		_ ->
+			{Vx / Vl * State#state.power, Vy / Vl * State#state.power}
+	end,
+	uni_obj:send_neigh(Tick, State#state.ship_pid, {accel, {Dx, Dy}}),
+    State2.

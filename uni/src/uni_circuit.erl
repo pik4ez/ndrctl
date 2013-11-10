@@ -23,4 +23,4 @@ register_module(ShipId, ModId, Tags) ->
     rpc:call(?CIRCUIT, relay, register_device, [ShipId, ModId, Tags], 5000).
 
 poll_module(Id) ->
-    gen_server:call({Id, ?CIRCUIT}, req, 1000).
+    gen_server:call({Id, ?CIRCUIT}, req, 5000).

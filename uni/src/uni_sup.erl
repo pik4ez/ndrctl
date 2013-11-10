@@ -15,7 +15,7 @@ init(_Args) ->
 		{store,
 			{uni_store, start_link, []},
 			permanent,
-			1000,
+			5000,
 			worker,
 			[store]},
 		{out_sup,
